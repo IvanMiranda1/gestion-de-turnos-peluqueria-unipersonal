@@ -1,0 +1,72 @@
+Sistema: Gestión de turnos para una peluquería unipersonal
+
+Requerimiento técnico:
+
+    Registrar clientes con nombre, teléfono y preferencia horaria (mañana, tarde, noche).
+
+    Crear turnos indicando fecha, hora y cliente.
+
+    No permitir turnos superpuestos (un turno a la vez).
+
+    Consultar turnos futuros por fecha.
+
+    Eliminar turnos existentes.
+
+
+Entidades:
+
+Turno: fechayhora, cliente
+Cliente: nombre, telefono, preferencia horaria (mañana, tarde, noche).
+
+Enum:
+Preferencia horaria = mañana - tarde - noche
+
+
+fecha y hora van juntas, para prevenir solapamientos
+
+estructura recomnedada
+/internal
+  /domain
+    cliente.go
+    turno.go
+    preferencia_horaria.go
+    time_of_day.go
+  /dto
+    cliente_dto.go
+    turno_dto.go
+  /handler
+    cliente_handler.go
+    turno_handler.go
+  /repository
+    turno_repository.go
+    cliente_repository.go
+  /service
+    turno_service.go
+    cliente_service.go
+  /validation
+    validations.go
+
+/pkg
+  /database
+    db.go
+
+/tests
+  /service
+    turno_service_test.go
+    cliente_service_test.go
+
+
+
+El handler recibe una solicitud HTTP, la interpreta, delega la accion al servicio y devuelve una respuesta HTTP
+Es el puente entre lo externo JSON, URLs y la logica internal
+Funciones:
+
+    Parsear entrada (ej. JSON → DTO)
+
+    Invocar servicio con los datos
+
+    Formatear la respuesta (DTO → JSON)
+
+    Devolver código HTTP apropiado
+
+No contiene lógica de negocio ni accede a la base directamente. Solo traduce.
