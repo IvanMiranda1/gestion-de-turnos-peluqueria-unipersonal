@@ -8,8 +8,8 @@ import (
 
 	"github.com/IvanMiranda1/gestion-de-turnos-peluqueria-unipersonal/internal/domain"
 	"github.com/IvanMiranda1/gestion-de-turnos-peluqueria-unipersonal/internal/dto"
+	"github.com/IvanMiranda1/gestion-de-turnos-peluqueria-unipersonal/internal/repository"
 	service "github.com/IvanMiranda1/gestion-de-turnos-peluqueria-unipersonal/internal/service/cliente"
-	"github.com/IvanMiranda1/gestion-de-turnos-peluqueria-unipersonal/repository"
 	"github.com/google/uuid"
 )
 

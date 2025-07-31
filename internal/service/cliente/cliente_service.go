@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/IvanMiranda1/gestion-de-turnos-peluqueria-unipersonal/internal/domain"
-	"github.com/IvanMiranda1/gestion-de-turnos-peluqueria-unipersonal/repository"
+	"github.com/IvanMiranda1/gestion-de-turnos-peluqueria-unipersonal/internal/repository"
 	"github.com/google/uuid"
 )
 

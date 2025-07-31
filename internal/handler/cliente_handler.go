@@ -60,6 +60,11 @@ func (h *ClienteHandler) Create(w http.ResponseWriter, r *http.Request) {
 */
 
 func (h *ClienteHandler) Update(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		web.Error(w, http.StatusBadRequest, "id is required")
+		return
+	}
 	var req dto.ClienteRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		web.Error(w, http.StatusBadRequest, "invalid request body")
@@ -68,6 +73,10 @@ func (h *ClienteHandler) Update(w http.ResponseWriter, r *http.Request) {
 	c, err := req.ToDomain()
 	if err != nil {
 		web.Error(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if id != c.ID {
+		web.Error(w, http.StatusBadRequest, "id in url does not match id in body")
 		return
 	}
 	res, err := h.s.Update(r.Context(), c)

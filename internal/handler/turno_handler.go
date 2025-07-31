@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/IvanMiranda1/gestion-de-turnos-peluqueria-unipersonal/internal/dto"
@@ -49,6 +50,7 @@ func (h *TurnoHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *TurnoHandler) Update(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
 	var req dto.TurnoRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		web.Error(w, http.StatusBadRequest, "invalid request body")
@@ -57,6 +59,10 @@ func (h *TurnoHandler) Update(w http.ResponseWriter, r *http.Request) {
 	t, err := h.s.ToDomain(r.Context(), &req)
 	if err != nil {
 		web.Error(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if id != t.ID {
+		web.Error(w, http.StatusBadRequest, "id in url does not match id in request body")
 		return
 	}
 	res, err := h.s.Update(r.Context(), t)
@@ -73,7 +79,14 @@ func (h *TurnoHandler) GetByFecha(w http.ResponseWriter, r *http.Request) {
 		web.Error(w, http.StatusBadRequest, "fecha is required")
 		return
 	}
-	fechaparsed, err := time.Parse("2006/01/02", fecha)
+
+	decodedFecha, err := url.QueryUnescape(fecha)
+	if err != nil {
+		web.Error(w, http.StatusBadRequest, "invalid fecha format")
+		return
+	}
+
+	fechaparsed, err := time.Parse("2006/01/02", decodedFecha)
 	if err != nil {
 		web.Error(w, http.StatusBadRequest, "formato de fecha invalido")
 		return

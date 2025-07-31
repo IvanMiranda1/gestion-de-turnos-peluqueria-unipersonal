@@ -1,0 +1,15 @@
+version: '3.9'  # Versión del esquema de Docker Compose
+
+services:
+  db:  # Nombre del servicio
+    image: postgres:16  # Imagen oficial de PostgreSQL, versión 16
+    container_name: turnos_postgres  # Nombre del contenedor asignado
+    environment:  # Variables de entorno usadas por PostgreSQL al iniciar
+      POSTGRES_USER: admin        # Usuario administrador
+      POSTGRES_PASSWORD: admin123  # Contraseña del usuario
+      POSTGRES_DB: turnos         # Nombre de la base de datos a crear
+    ports:
+      - "5432:5432"  # Expone el puerto 5432 del contenedor al host
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      # Ejecuta el SQL inicial al crear la base de datos

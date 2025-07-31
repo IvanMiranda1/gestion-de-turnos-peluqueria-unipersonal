@@ -23,9 +23,6 @@ func NewTurno(id string, fecha time.Time, hora TimeOfDay, cliente Cliente) *Turn
 }
 
 func (t *Turno) Validate() error {
-	if t.ID == "" {
-		return errors.New("ID no puede estar vacío")
-	}
 	if t.Fecha.IsZero() {
 		return errors.New("fecha no puede ser cero")
 	}

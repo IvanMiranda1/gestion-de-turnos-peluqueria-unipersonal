@@ -17,6 +17,7 @@ func NewTurnoPostgresRepository(db *sql.DB) *TurnoPostgresRepository {
 }
 
 func (r *TurnoPostgresRepository) CreateOrUpdate(ctx context.Context, t *domain.Turno) (*domain.Turno, error) {
+
 	_, err := r.db.ExecContext(ctx,
 		`INSERT INTO turno(id, fecha, hora, cliente_id)
 	VALUES ($1, $2, $3, $4)
@@ -24,7 +25,7 @@ func (r *TurnoPostgresRepository) CreateOrUpdate(ctx context.Context, t *domain.
 	DO UPDATE SET fecha = EXCLUDED.fecha,
 	hora = EXCLUDED.hora,
 	cliente_id = EXCLUDED.cliente_id`,
-		t.ID, t.Fecha, t.Hora.String(), t.Cliente)
+		t.ID, t.Fecha, t.Hora.String(), t.Cliente.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -41,9 +42,17 @@ func (r *TurnoPostgresRepository) GetAll(ctx context.Context) ([]*domain.Turno, 
 	var turnos []*domain.Turno
 	for rows.Next() {
 		var t domain.Turno
-		if err := rows.Scan(&t.ID, &t.Fecha, &t.Hora, &t.Cliente); err != nil {
+		var horaStr string
+		var cliente_id string
+		if err := rows.Scan(&t.ID, &t.Fecha, &horaStr, &cliente_id); err != nil {
 			return nil, err
 		}
+		horaParsed, err := domain.ParseTimeOfDay(horaStr)
+		if err != nil {
+			return nil, err
+		}
+		t.Hora = horaParsed
+		t.Cliente = domain.Cliente{ID: cliente_id}
 		turnos = append(turnos, &t)
 	}
 	if err := rows.Err(); err != nil {
@@ -64,11 +73,16 @@ func (r *TurnoPostgresRepository) GetByFecha(ctx context.Context, fecha time.Tim
 		return nil, err
 	}
 	defer rows.Close()
-
 	var turnos []*domain.Turno
+	var horaStr string
+	var cliente_id string // cliente_id sirve para descartar el dato redundante
 	for rows.Next() {
 		var t domain.Turno
-		if err := rows.Scan(&t.ID, &t.Fecha, &t.Hora, &t.Cliente.ID, &t.Cliente.Nombre, &t.Cliente.Telefono, &t.Cliente.PreferenciaHoraria); err != nil {
+		if err := rows.Scan(&t.ID, &t.Fecha, &horaStr, &cliente_id, &t.Cliente.ID, &t.Cliente.Nombre, &t.Cliente.Telefono, &t.Cliente.PreferenciaHoraria); err != nil {
+			return nil, err
+		}
+		t.Hora, err = domain.ParseTimeOfDay(horaStr)
+		if err != nil {
 			return nil, err
 		}
 		turnos = append(turnos, &t)
