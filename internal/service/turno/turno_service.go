@@ -45,11 +45,11 @@ func (s turnoService) Create(ctx context.Context, t *domain.Turno) (*domain.Turn
 }
 
 func (s turnoService) Update(ctx context.Context, t *domain.Turno) (*domain.Turno, error) {
-	if t.ID == "" {
-		return nil, errors.New("ID requerido para actualizar")
-	}
 	if err := t.Validate(); err != nil {
 		return nil, err
+	}
+	if t.ID == "" {
+		return nil, errors.New("ID requerido para actualizar")
 	}
 	return s.repo.CreateOrUpdate(ctx, t)
 }
@@ -66,6 +66,7 @@ func (s turnoService) GetAll(ctx context.Context) ([]*domain.Turno, error) {
 	return s.repo.GetAll(ctx)
 }
 
+// este no recibe test
 func (s turnoService) ToDomain(ctx context.Context, t *dto.TurnoRequest) (*domain.Turno, error) {
 	fecha, err := time.Parse("2006/01/02", t.Fecha)
 	if err != nil {
@@ -75,7 +76,7 @@ func (s turnoService) ToDomain(ctx context.Context, t *dto.TurnoRequest) (*domai
 	if err != nil {
 		return nil, fmt.Errorf("error de parse timeofday: %w", err)
 	}
-	cliente, err := s.clienteService.GetByID(ctx, t.ClienteID)
+	cliente, _ := s.clienteService.GetByID(ctx, t.ClienteID)
 	if cliente == nil {
 		return nil, fmt.Errorf("cliente vacio")
 	}

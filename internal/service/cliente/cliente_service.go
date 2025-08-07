@@ -52,6 +52,9 @@ func (s clienteService) Delete(ctx context.Context, id string) error {
 }
 
 func (s clienteService) GetByID(ctx context.Context, id string) (*domain.Cliente, error) {
+	if id == "" {
+		return nil, errors.New("ID requerido para obetener cliente")
+	}
 	return s.repo.GetByID(ctx, id)
 }
 
